@@ -1,0 +1,24 @@
+{
+  "name": "threejs-solid-phi",
+  "version": "1.0.0",
+  "description": "Experiment in creating solid geometries with phi lengths < 360",
+  "main": "main.js",
+  "dependencies": {
+    "electron": "^6.0.9",
+    "three": "^0.108.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samuel-zuk/threejs-solid-phi.git"
+  },
+  "author": "Samuel Zuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samuel-zuk/threejs-solid-phi/issues"
+  },
+  "homepage": "https://github.com/samuel-zuk/threejs-solid-phi#readme"
+}

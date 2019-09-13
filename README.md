@@ -1,0 +1,1 @@
+This is a small test project that aims to create solid (non-concave) geometries out of geometries that utilize phi-length, like spheres. Instead of rendering a shell, we should ideally render a solid object.
