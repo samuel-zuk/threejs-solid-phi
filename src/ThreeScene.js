@@ -6,66 +6,42 @@ class ThreeScene extends React.Component {
     console.log("we got here\n");
     let camera, scene, renderer, mesh, material;
     init();
-    //testGeometry();
-    addGeometry();
+    addSphere();
     animate();
 
-    function addGeometry() {
-      // Create sphere and add to scene.
+  function addSphere() {
       let phiLen = 5;
+      let rotationMatrix = (axis, theta) => {
+        let matrix = new THREE.Matrix4();
+        switch(axis) {
+          case "x":
+            matrix.makeRotationX(theta);
+            break;
+          case "y":
+            matrix.makeRotationY(theta);
+            break;
+          case "z":
+            matrix.makeRotationZ(theta);
+            break;
+          default:
+        }
+        return matrix;
+      }
+
       let sphereGeometry = new THREE.SphereGeometry(200, 32, 32, 0, phiLen);
-      let sphereMesh = new THREE.Mesh(sphereGeometry, material);
 
       let semi1Geometry = new THREE.CircleGeometry(200, 32, 0, Math.PI);
-      let semi1Mesh = new THREE.Mesh(semi1Geometry, material);
-      semi1Mesh.rotation.z = Math.PI / 2;
-      semi1Mesh.rotation.x = Math.PI;
+      semi1Geometry.applyMatrix(rotationMatrix("z", Math.PI / 2));
+      semi1Geometry.applyMatrix(rotationMatrix("x", Math.PI));
 
       let semi2Geometry = new THREE.CircleGeometry(200, 32, 0, Math.PI);
-      let semi2Mesh = new THREE.Mesh(semi2Geometry, material);
-      semi2Mesh.rotation.z = Math.PI / 2;
-      semi2Mesh.rotation.y = phiLen;
+      semi2Geometry.applyMatrix(rotationMatrix("z", Math.PI / 2));
+      semi2Geometry.applyMatrix(rotationMatrix("y", phiLen));
 
       let geometry = new THREE.Geometry();
-      sphereMesh.updateMatrix();
-      geometry.merge(sphereMesh.geometry, sphereMesh.matrix);
-      semi1Mesh.updateMatrix();
-      geometry.merge(semi1Mesh.geometry, semi1Mesh.matrix);
-      semi2Mesh.updateMatrix();
-      geometry.merge(semi2Mesh.geometry, semi2Mesh.matrix);
-      mesh = new THREE.Mesh(geometry, material);
-
-      scene.add(mesh);
-    }
-
-    function testGeometry() {
-      let phiLength = 2;
-      let geometry = new THREE.Geometry();
-      let sphereGeometry = new THREE.SphereGeometry(1, 32, 32, 0, phiLength);
-
-      let semi1Geometry = new THREE.CircleGeometry(1, 32, 0, Math.PI);
-      semi1Geometry.rotateZ(Math.PI / 2).rotateX(Math.PI);
-      
-      let semi2Geometry = new THREE.CircleGeometry(1, 32, 0, Math.PI);
-      semi2Geometry.rotateZ(Math.PI / 2).rotateY(phiLength);
-
-      let faces = semi1Geometry.faces.concat(semi2Geometry.faces).concat(sphereGeometry.faces);
-      let vertices = semi1Geometry.vertices.concat(semi2Geometry.vertices).concat(sphereGeometry.vertices);
-
-      for(let vertex in vertices) {
-        if(vertex.isVector3) geometry.vertices.push(vertex);
-      }
-      //geometry.mergeVertices();
-      console.log(geometry.vertices);
-      geometry.computeBoundingBox();
-
-      for(let face in faces) {
-          geometry.faces.push(face);
-      }
-      geometry.elementsNeedUpdate = true;
-      
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
+      geometry.merge(sphereGeometry);
+      geometry.merge(semi1Geometry);
+      geometry.merge(semi2Geometry);
 
       mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
