@@ -1,7 +1,7 @@
 let camera, scene, renderer, mesh, material;
 init();
-//testGeometry();
-addGeometry();
+testGeometry();
+//addGeometry();
 animate();
 
 function addGeometry() {
