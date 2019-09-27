@@ -3,45 +3,67 @@ import * as THREE from 'three';
 
 class ThreeScene extends React.Component {
   componentDidMount() { 
-    console.log("we got here\n");
     let camera, scene, renderer, mesh, material;
     init();
-    addSphere();
+    //addSphere();
+    addTorus();
     animate();
 
-  function addSphere() {
-      let phiLen = 5;
-      let rotationMatrix = (axis, theta) => {
-        let matrix = new THREE.Matrix4();
-        switch(axis) {
-          case "x":
-            matrix.makeRotationX(theta);
-            break;
-          case "y":
-            matrix.makeRotationY(theta);
-            break;
-          case "z":
-            matrix.makeRotationZ(theta);
-            break;
-          default:
-        }
-        return matrix;
+    function rotationMatrix(axis, theta) {
+      let matrix = new THREE.Matrix4();
+      switch(axis) {
+        case "x":
+          matrix.makeRotationX(theta);
+          break;
+        case "y":
+          matrix.makeRotationY(theta);
+          break;
+        case "z":
+          matrix.makeRotationZ(theta);
+          break;
+        default:
       }
+      return matrix;
+    }
 
-      let sphereGeometry = new THREE.SphereGeometry(200, 32, 32, 0, phiLen);
+    function positionMatrix(geometry, deltaX, deltaY, deltaZ) {
+      let matrix = new THREE.Matrix4();
+      let position = geometry.
+    }
 
-      let semi1Geometry = new THREE.CircleGeometry(200, 32, 0, Math.PI);
-      semi1Geometry.applyMatrix(rotationMatrix("z", Math.PI / 2));
-      semi1Geometry.applyMatrix(rotationMatrix("x", Math.PI));
+    function addTorus() {
+      let phiLen = 5;
 
-      let semi2Geometry = new THREE.CircleGeometry(200, 32, 0, Math.PI);
-      semi2Geometry.applyMatrix(rotationMatrix("z", Math.PI / 2));
-      semi2Geometry.applyMatrix(rotationMatrix("y", phiLen));
+      let torusGeometry = new THREE.TorusGeometry(200, 40, 32, 32, phiLen);
+
+      let circleStart = new THREE.CircleGeometry(40, 32, 0, Math.PI * 2);
+      circleStart.applyMatrix(rotationMatrix("x", Math.PI / 2));
 
       let geometry = new THREE.Geometry();
-      geometry.merge(sphereGeometry);
-      geometry.merge(semi1Geometry);
-      geometry.merge(semi2Geometry);
+      geometry.merge(torusGeometry);
+      geometry.merge(circleStart);
+
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+    }
+
+    function addSphere() {
+      let phiLen = 5;
+
+      let sphere = new THREE.SphereGeometry(200, 32, 32, 0, phiLen);
+
+      let semiStart = new THREE.CircleGeometry(200, 32, 0, Math.PI);
+      semiStart.applyMatrix(rotationMatrix("z", Math.PI / 2));
+      semiStart.applyMatrix(rotationMatrix("x", Math.PI));
+
+      let semiEnd = new THREE.CircleGeometry(200, 32, 0, Math.PI);
+      semiEnd.applyMatrix(rotationMatrix("z", Math.PI / 2));
+      semiEnd.applyMatrix(rotationMatrix("y", phiLen));
+
+      let geometry = new THREE.Geometry();
+      geometry.merge(sphere);
+      geometry.merge(semiStart);
+      geometry.merge(semiEnd);
 
       mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
@@ -63,9 +85,10 @@ class ThreeScene extends React.Component {
       scene = new THREE.Scene();
 
       // Create material
-      material = new THREE.MeshPhongMaterial();
+      material = new THREE.MeshBasicMaterial();
+      //material = new THREE.MeshPhongMaterial();
       material.color.set("turquoise");
-      //material.wireframe = true;
+      material.wireframe = true;
 
       // Create ambient light and add to scene.
       let light = new THREE.AmbientLight(0x404040); // soft white light
