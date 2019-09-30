@@ -1,13 +1,26 @@
 import React from 'react';
 import * as THREE from 'three';
+import { MeshBasicMaterial, MeshPhongMaterial } from 'three';
 
 class ThreeScene extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      phiLength : props.phiLength,
+      wireframe : props.wireframe,
+    };
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    let newState = {};
+    if(props.phiLength !== state.phiLength) newState["phiLength"] = props.phiLength;
+    if(props.wireframe !== state.wireframe) newState["wireframe"] = props.wireframe;
+    
+    return newState;
+  }
+
   componentDidMount() {
     let camera, scene, renderer, mesh, material;
-    init();
-    //addSphere();
-    addTorus();
-    animate();
 
     function rotationMatrix(axis, theta) {
       let matrix = new THREE.Matrix4();
@@ -34,8 +47,8 @@ class ThreeScene extends React.Component {
       return matrix;
     }
 
-    function addTorus() {
-      let phiLen = 4;
+    let addTorus = () => {
+      let phiLen = this.state.phiLength;
       let radius = 150;
       let width = 40;
 
@@ -61,8 +74,8 @@ class ThreeScene extends React.Component {
 
 
 
-    function addSphere() {
-      let phiLen = 5;
+    let addSphere = () => {
+      let phiLen = this.state.phiLength;
       let radius = 200;
 
       let sphere = new THREE.SphereGeometry(radius, 32, 32, 0, phiLen);
@@ -84,7 +97,7 @@ class ThreeScene extends React.Component {
       scene.add(mesh);
     }
 
-    function init() {
+    let init = () => {
       // Renderer.
       renderer = new THREE.WebGLRenderer();
       //renderer.setPixelRatio(window.devicePixelRatio);
@@ -100,10 +113,15 @@ class ThreeScene extends React.Component {
       scene = new THREE.Scene();
 
       // Create material
-      material = new THREE.MeshBasicMaterial();
-      //material = new THREE.MeshPhongMaterial();
-      material.color.set("turquoise");
-      material.wireframe = true;
+      if (this.state.wireframe) {
+        material = new MeshBasicMaterial();
+        material.color.set("turquoise");
+        material.wireframe = true;
+      }
+      else {
+        material = new MeshPhongMaterial();
+        material.color.set("turquoise");
+      }
 
       // Create ambient light and add to scene.
       let light = new THREE.AmbientLight(0x404040); // soft white light
@@ -138,6 +156,11 @@ class ThreeScene extends React.Component {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+
+    init();
+    //addSphere();
+    addTorus();
+    animate();
   }
   render() {
     return <div ref={ref => (this.mount = ref)} />;
