@@ -2,11 +2,6 @@ import React from 'react';
 import * as THREE from 'three';
 
 class ThreeScene extends React.Component {
-  constructor(props) {
-    super(props);
-    this.phiLength = props.phiLength;
-  }
-
   componentDidMount() {
     let camera, scene, renderer, mesh, material;
     init();
