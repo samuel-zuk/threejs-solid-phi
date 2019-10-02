@@ -58,11 +58,12 @@ class App extends React.Component {
         return (   
             <div>
                 <Button variant="outlined" onClick={this.switchView}>Switch View</Button>
+                <Button variant="outlined" onClick={()=>{console.log(this.state)}}>debug</Button>
                 {this.state.currentView === "three" ?
                     this.threeHelper() :
                     this.aFrameHelper()
                 }
-                <Button variant="outlined" onClick={()=>{console.log(this.state)}}>debug</Button>
+                
             </div>
         );
     }
