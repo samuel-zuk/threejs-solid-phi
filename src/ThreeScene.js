@@ -21,6 +21,7 @@ class ThreeScene extends React.Component {
 
   componentDidMount() {
     let camera, scene, renderer, mesh, material;
+    let shape = "torus";
 
     function rotationMatrix(axis, theta) {
       let matrix = new THREE.Matrix4();
@@ -45,6 +46,25 @@ class ThreeScene extends React.Component {
 
       matrix.setPosition(position);
       return matrix;
+    }
+
+    let addGeometry = (type) => {
+      console.log(this);
+      switch(type) {
+        case "torus":
+          addTorus();
+          break;
+        case "sphere":
+          addSphere();
+          break;
+        case "cylinder":
+          addCylinder();
+          break;
+        case "polyhedron":
+          addPolyhedron();
+          break;
+        default:
+      }
     }
 
     let addTorus = () => {
@@ -72,7 +92,53 @@ class ThreeScene extends React.Component {
       scene.add(mesh);
     }
 
+    let addPolyhedron = () => {
+      let phiLen = 4.7;
+      let radius = 200;
+      let segments = 8;
 
+      let polyhedron = new THREE.SphereGeometry(radius, 2, segments, 0, phiLen);
+
+      let semiStart = new THREE.CircleGeometry(radius, segments, 0, Math.PI);
+      semiStart.applyMatrix(rotationMatrix("z", Math.PI / 2));
+      semiStart.applyMatrix(rotationMatrix("x", Math.PI));
+
+      let semiEnd = new THREE.CircleGeometry(radius, segments, 0, Math.PI);
+      semiEnd.applyMatrix(rotationMatrix("z", Math.PI / 2));
+      semiEnd.applyMatrix(rotationMatrix("y", phiLen));
+
+      let geometry = new THREE.Geometry();
+      geometry.merge(polyhedron);
+      geometry.merge(semiStart);
+      geometry.merge(semiEnd);
+
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+    }
+
+    let addCylinder = () => {
+      let phiLen = 4.7;
+      let radius = 200;
+      let height = 300;
+
+      let cylinder = new THREE.CylinderGeometry(radius, radius, height, 32, 32, false, 0, phiLen);
+
+      let rectStart = new THREE.PlaneGeometry(radius, height);
+      rectStart.applyMatrix(rotationMatrix("y", Math.PI / 2));
+      rectStart.applyMatrix(positionMatrix(0, 0, radius/2));
+
+      let rectEnd = new THREE.PlaneGeometry(radius, height);
+      rectEnd.applyMatrix(rotationMatrix("y", Math.PI / 2 +  phiLen));
+      rectEnd.applyMatrix(positionMatrix(Math.sin(phiLen) * 0.5 * radius, 0, Math.cos(phiLen) * 0.5 * radius));
+
+      let geometry = new THREE.Geometry();
+      geometry.merge(cylinder);
+      geometry.merge(rectStart);
+      geometry.merge(rectEnd);
+
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+    }
 
     let addSphere = () => {
       let phiLen = this.state.phiLength;
@@ -158,8 +224,7 @@ class ThreeScene extends React.Component {
     }
 
     init();
-    //addSphere();
-    addTorus();
+    addGeometry(shape);
     animate();
   }
   render() {
